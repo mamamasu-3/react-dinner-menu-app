@@ -1,70 +1,114 @@
-# Getting Started with Create React App
+# 夕飯メニュー管理アプリ - README
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+このアプリは、Google Apps Script (以下、GAS) をデータベース兼 API サーバーとして利用し、React でフロントエンドを構築することで、以下の機能を実現します。
 
-## Available Scripts
+- **メニュー一覧の取得**  
+- **新規メニュー登録**  
+- **メニュー編集**  
+- **メニュー削除**  
+- **いいね (likes) 機能**  
+- **今日の夕飯をランダム表示** (ボタン押下で再抽選)
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## 1. スプレッドシートと GAS のセットアップ
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+1. **スプレッドシートの作成**
+   - Google ドライブ上で新規スプレッドシートを作成し、シート名を **「メニュー」** に変更します。
+   - 1行目のヘッダーとして `id`, `name`, `description`, `likes` を設定してください。
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+2. **Apps Script を開く**
+   - スプレッドシート上部メニュー「拡張機能」→「Apps Script」をクリックします。
 
-### `npm test`
+3. **GAS のコードを貼り付け**
+   - 作成されたスクリプトファイル (`コード.gs` など) に、メニューのCRUD・いいね処理を行う関数を実装してください。
+   - すべての関数を作成後、保存します。
+   - 本リポジトリの「API.gs」がGASのコードとなります。
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+4. **ウェブアプリとしてデプロイ**
+   - スクリプトエディタ右上付近の「デプロイ」→「新しいデプロイ」を選択します。
+   - 「デプロイの種類」を「ウェブアプリ」に設定し、以下を指定してください。  
+     - **実行するユーザー**：「自分」  
+     - **アクセスできるユーザー**：「全員 (匿名ユーザーを含む)」  
+   - デプロイ後に発行される URL（例：`https://script.google.com/macros/s/.../exec`）をメモしておきます。
 
-### `npm run build`
+---
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 2. React アプリの作成手順
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+1. **Node.js 環境の確認**
+   - ターミナル (またはコマンドプロンプト) で以下を入力し、バージョンが表示されることを確認してください。  
+     ```
+     node -v
+     npm -v
+     ```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+2. **Create React App でプロジェクト作成**
+   - 作業ディレクトリを開き、以下を実行します。  
+     ```
+     npx create-react-app dinner-menu-app
+     ```
+   - 成功すると `dinner-menu-app` というフォルダが生成されます。
 
-### `npm run eject`
+3. **プロジェクトの起動**
+   - ディレクトリに移動後、以下を実行してください。  
+     ```
+     cd dinner-menu-app
+     npm start
+     ```
+   - ブラウザで `http://localhost:3000` にアクセスすると、React アプリが表示されます。
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+4. **API 呼び出しの実装**
+   - フロントエンドのコード内で、先ほど発行された GAS のウェブアプリ URL に対して `fetch` などでリクエストを送る実装を行います。
+   - `?action=create` や `?action=update` といったパラメータを付加して、GAS 側で用意した関数を呼び出します。
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+5. **コンポーネント分割**
+   - 今回の例では、以下のようにコンポーネントを分割することを推奨します。
+     - **NewMenuForm**：新規メニュー登録フォーム
+     - **EditMenuForm**：メニュー編集フォーム
+     - **MenuList**：メニュー一覧表示 (編集/削除/いいね ボタンつき)
+     - **RandomMenuPicker**：登録済みメニューからランダムに1つをピックアップして表示し、ボタンで再抽選
+     - **App**：メインコンテナ。メニュー一覧を管理し、各コンポーネントに状態や関数を渡します。
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+6. **ランダムメニュー表示機能**
+   - ランダムで1件を取得する場合、配列の長さに応じて `Math.random()` を活用し、該当する配列要素を選択します。
+   - ボタン押下時に再度ランダム抽選を行って別のメニューを表示します。
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+---
 
-## Learn More
+## 3. 実行・ビルド・デプロイ
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+1. **開発サーバーでの確認**
+   - `npm start` を実行し、localhost:3000 で動作を確認します。
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+2. **本番用ビルド**
+   - アプリを本番としてデプロイしたい場合は、以下を実行してください。  
+     ```
+     npm run build
+     ```
+   - 生成された `build` フォルダを、ホスティングサービス (例：Netlify, Vercel, AWS S3 など) にアップすることで、インターネット上で公開できます。
 
-### Code Splitting
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## 4. 注意点
 
-### Analyzing the Bundle Size
+1. **GAS の公開範囲**
+   - 「全員 (匿名ユーザーを含む)」に公開すると、誰でもアクセス可能な状態です。  
+   - 実際に運用する際には、アクセス制限や認証を検討してください。
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+2. **同時編集の競合**
+   - スプレッドシートは同時書き込みに不向きな場合があります。  
+   - 多数のユーザーが同時に操作するようなケースではデータ競合が起きる可能性があるため注意が必要です。
 
-### Making a Progressive Web App
+3. **コードの管理**
+   - React 側のコードは、コンポーネント分割や適切なディレクトリ構成を行い、読みやすさを保ちましょう。  
+   - GAS 側の修正内容は、デプロイ時にバージョンアップが必要です。
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+---
 
-### Advanced Configuration
+## 5. まとめ
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- **Google Apps Script** + **React** によるシンプルなメニュー管理システムが構築できます。  
+- **ランダムメニュー表示**機能を追加することで、日々の夕飯を抽選で決める楽しい仕組みにもなります。  
+- スプレッドシートをデータベース代わりに利用するため、小規模で手軽に運用可能です。  
+- ぜひご活用ください！
