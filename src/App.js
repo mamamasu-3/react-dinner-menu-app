@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import NewMenuForm from './components/NewMenuForm';
 import EditMenuForm from './components/EditMenuForm';
 import MenuList from './components/MenuList';
+import RandomMenuPicker from './components/RandomMenuPicker';
 
 // Appコンポーネントを定義します
 function App() {
@@ -102,9 +103,14 @@ function App() {
 
   // 画面表示を行う部分です
   return (
-    <div style={{ padding: '20px' }}>
+    <div className="p-5 bg-gray-50 min-h-screen">
       {/* タイトル */}
-      <h1>メニュー管理アプリ (id, name, likes)</h1>
+      <h1 className="text-3xl font-bold text-gray-800 mb-4">
+        メニュー管理アプリ
+      </h1>
+
+      {/* ランダムメニュー表示コンポーネント */}
+      <RandomMenuPicker menus={menus} />
 
       {/* 新規登録フォームコンポーネント */}
       <NewMenuForm onCreate={createMenu} />

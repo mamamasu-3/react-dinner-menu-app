@@ -23,16 +23,21 @@ function RandomMenuPicker({ menus }) {
   };
 
   return (
-    <div style={{ marginBottom: 30 }}>
-      <h2>今日の夕飯は…？</h2>
+    <div className="mb-8 p-4 bg-white shadow rounded">
+      <h2 className="text-xl font-semibold text-gray-700 mb-3">今日の夕飯は…？</h2>
       {randomMenu ? (
         <p>
-          <strong>{randomMenu.name}</strong> - {randomMenu.description}
+          <strong>{randomMenu.name}</strong>
         </p>
       ) : (
         <p>メニューが登録されていません。</p>
       )}
-      <button onClick={pickRandomMenu}>別の夕飯を提案する</button>
+      <button
+        onClick={pickRandomMenu}
+        className="mt-4 bg-indigo-500 text-white font-bold py-2 px-4 rounded hover:bg-indigo-600"
+      >
+        別の夕飯を提案する
+      </button>
     </div>
   );
 }
